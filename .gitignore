@@ -1,0 +1,18 @@
+# Binaries
+/api
+/api.exe
+api.pid
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# IDE / Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Go
+vendor/
