@@ -1,5 +1,5 @@
 -- Users & Auth
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
@@ -9,13 +9,13 @@ CREATE TABLE users (
 );
 
 -- Assets & Chains
-CREATE TABLE blockchains (
+CREATE TABLE IF NOT EXISTS blockchains (
     id TEXT PRIMARY KEY, -- e.g., 'bitcoin', 'ethereum'
     network TEXT NOT NULL, -- 'mainnet', 'testnet'
     confirmation_threshold INT DEFAULT 1
 );
 
-CREATE TABLE assets (
+CREATE TABLE IF NOT EXISTS assets (
     id TEXT PRIMARY KEY, -- 'BTC', 'ETH', 'USDT'
     blockchain_id TEXT REFERENCES blockchains(id),
     symbol TEXT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE assets (
 );
 
 -- Wallets
-CREATE TABLE wallets (
+CREATE TABLE IF NOT EXISTS wallets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     type TEXT NOT NULL, -- 'hot', 'cold'
     asset_id TEXT REFERENCES assets(id),
@@ -36,7 +36,7 @@ CREATE TABLE wallets (
 );
 
 -- Ledger (Double Entry)
-CREATE TABLE ledger_accounts (
+CREATE TABLE IF NOT EXISTS ledger_accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id), -- NULL for system accounts
     asset_id TEXT REFERENCES assets(id),
@@ -45,7 +45,7 @@ CREATE TABLE ledger_accounts (
     CONSTRAINT unique_user_asset UNIQUE (user_id, asset_id, type)
 );
 
-CREATE TABLE ledger_entries (
+CREATE TABLE IF NOT EXISTS ledger_entries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     transaction_id UUID NOT NULL, -- Grouping ID for double-entry
     account_id UUID REFERENCES ledger_accounts(id),
@@ -58,14 +58,14 @@ CREATE TABLE ledger_entries (
 );
 
 -- Deposits
-CREATE TABLE deposit_addresses (
+CREATE TABLE IF NOT EXISTS deposit_addresses (
     address TEXT PRIMARY KEY,
     user_id UUID REFERENCES users(id),
     asset_id TEXT REFERENCES assets(id),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE deposits (
+CREATE TABLE IF NOT EXISTS deposits (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     asset_id TEXT REFERENCES assets(id),
@@ -80,7 +80,7 @@ CREATE TABLE deposits (
 );
 
 -- Withdrawals
-CREATE TABLE withdrawals (
+CREATE TABLE IF NOT EXISTS withdrawals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
     asset_id TEXT REFERENCES assets(id),
@@ -93,7 +93,7 @@ CREATE TABLE withdrawals (
 );
 
 -- Proof of Reserves
-CREATE TABLE por_snapshots (
+CREATE TABLE IF NOT EXISTS por_snapshots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     asset_id TEXT REFERENCES assets(id),
     merkle_root TEXT NOT NULL,

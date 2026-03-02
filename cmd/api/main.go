@@ -34,9 +34,6 @@ func main() {
 	withdrawalService := withdrawal.NewService(db.GetDB(), ledgerService)
 	porService := por.NewService(db.GetDB())
 
-	// Run Seeds
-	seed.Seed(walletService)
-
 	// Auto-Migrate
 	schema, err := os.ReadFile("db/schema.sql")
 	if err == nil {
@@ -47,6 +44,9 @@ func main() {
 			log.Println("Database Schema Applied")
 		}
 	}
+
+	// Run Seeds (Must be after migration)
+	seed.Seed(walletService)
 
 	// Initialize Handlers
 	depositHandler := deposit.NewHandler(depositService)

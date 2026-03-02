@@ -127,7 +127,7 @@ func (s *Service) PostTransaction(ctx context.Context, req TransactionRequest) e
 		}
 
 		var delta float64
-		if accType == "liability" {
+		if accType == "liability" || accType == "liability_hold" {
 			if entry.Direction == "credit" {
 				delta = entry.Amount
 			} else {
